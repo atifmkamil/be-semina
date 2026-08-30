@@ -1,0 +1,36 @@
+const mongoose = require("mongoose");
+
+const ticketCategoriesSchema = new mongoose.Schema({
+  type: { type: String, required: [true, "Tiket Harus Diisi"] },
+  price: { type: Number, default: 0 },
+  stock: { type: Number, default: 0 },
+  statusTicketCategories: { type: Boolean, default: true, enum: [true, false] },
+  expired: { type: Date },
+});
+
+const eventsSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: [true, "Judul Harus Diisi"],
+    minlength: 3,
+    maxlength: 50,
+  },
+  date: { type: Date, required: [true, "Tanggal Harus Diisi"] },
+  about: { type: String },
+  tagline: { type: String, required: [true, "Tagline Harus Diisi"] },
+  keyPoint: {
+    type: [String],
+  },
+  venueName: { type: String, required: [true, "Tempat Acara Harus Diisi"] },
+  status: { type: String, enum: ["Draft", "Published"], default: "Draft" },
+  tickets: { type: [ticketCategoriesSchema], required: true },
+  category: {
+    type: mongoose.Types.ObjectId,
+    ref: "Category",
+    required: true,
+  },
+  image: { type: mongoose.Types.ObjectId, ref: "Image", required: true },
+  talent: { type: mongoose.Types.ObjectId, ref: "Talent", required: true },
+});
+
+module.exports = mongoose.model("Event", eventsSchema);

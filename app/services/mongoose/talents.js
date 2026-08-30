@@ -55,10 +55,11 @@ const updateTalents = async (req) => {
   const { id } = req.params;
   const { name, role, image } = req.body;
 
+  const checkTalents = await checkingTalents(id);
+
   await checkingImage(image);
 
   const check = await Talents.findOne({ name, _id: { $ne: id } });
-  console.log(check);
 
   if (check) throw new BadRequestError("Pembicara Nama Duplikat");
 
@@ -86,7 +87,8 @@ const deleteTalents = async (req) => {
 const checkingTalents = async (id) => {
   const result = await Talents.findOne({ _id: id });
 
-  if (!result) throw new NotFoundError(`Tidak ada Pembicara dengan id: ${id}`);
+  if (!result)
+    throw new NotFoundError(`Tidak ada pembicara dengan id :  ${id}`);
 
   return result;
 };
