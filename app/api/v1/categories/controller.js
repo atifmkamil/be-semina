@@ -1,12 +1,17 @@
-const Categories = require("./model");
+const { StatusCodes } = require("http-status-codes");
+const {
+  getAllCategories,
+  createCategories,
+  getOneCategories,
+  updateCategories,
+  deleteCategories,
+} = require("../../../services/mongoose/Categories");
 
 const create = async (req, res, next) => {
   try {
-    const { name } = req.body;
+    const result = await createCategories(req);
 
-    const result = await Categories.create({ name });
-
-    res.status(201).json({
+    res.status(StatusCodes.CREATED).json({
       data: result,
     });
   } catch (err) {
@@ -16,9 +21,9 @@ const create = async (req, res, next) => {
 
 const index = async (req, res, next) => {
   try {
-    const result = await Categories.find();
+    const result = await getAllCategories();
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       data: result,
     });
   } catch (err) {
@@ -28,10 +33,9 @@ const index = async (req, res, next) => {
 
 const find = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const result = await Categories.findOne({ _id: id });
+    const result = await getOneCategories(req);
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       data: result,
     });
   } catch (err) {
@@ -41,16 +45,9 @@ const find = async (req, res, next) => {
 
 const update = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const { name } = req.body;
+    const result = await updateCategories(req);
 
-    const result = await Categories.findByIdAndUpdate(
-      id,
-      { name },
-      { new: true, runValidator: true },
-    );
-
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       data: result,
     });
   } catch (err) {
@@ -60,11 +57,9 @@ const update = async (req, res, next) => {
 
 const destroy = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const result = await deleteCategories(req);
 
-    const result = await Categories.findByIdAndRemove(id);
-
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       data: result,
     });
   } catch (err) {
