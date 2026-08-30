@@ -5,7 +5,7 @@ const {
   getOneCategories,
   updateCategories,
   deleteCategories,
-} = require("../../../services/mongoose/Categories");
+} = require("../../../services/mongoose/categories");
 
 const create = async (req, res, next) => {
   try {
