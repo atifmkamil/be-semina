@@ -8,7 +8,7 @@ const ticketCategoriesSchema = new mongoose.Schema({
   expired: { type: Date },
 });
 
-const eventsSchema = new mongoose.Schema({
+const eventSchema = new mongoose.Schema({
   title: {
     type: String,
     required: [true, "Judul Harus Diisi"],
@@ -33,4 +33,4 @@ const eventsSchema = new mongoose.Schema({
   talent: { type: mongoose.Types.ObjectId, ref: "Talent", required: true },
 });
 
-module.exports = mongoose.model("Event", eventsSchema);
+module.exports = mongoose.model("Event", eventSchema);
