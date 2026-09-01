@@ -22,7 +22,7 @@ const eventSchema = new mongoose.Schema({
     type: [String],
   },
   venueName: { type: String, required: [true, "Tempat Acara Harus Diisi"] },
-  status: { type: String, enum: ["Draft", "Published"], default: "Draft" },
+  statusEvent: { type: String, enum: ["Draft", "Published"], default: "Draft" },
   tickets: { type: [ticketCategoriesSchema], required: true },
   category: {
     type: mongoose.Types.ObjectId,

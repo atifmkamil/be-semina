@@ -62,8 +62,8 @@ const getAllEvents = async (req) => {
     condition = { ...condition, talent: talent };
   }
 
-  if (status) {
-    condition = { ...condition, status: status };
+  if (["Draft", "Published"].includes(status)) {
+    condition = { ...condition, statusEvent: status };
   }
 
   const result = await Events.find(condition)
@@ -174,7 +174,11 @@ const deleteEvents = async (req) => {
 
 const changeStatusEvents = async (req) => {
   const { id } = req.params;
-  const { status } = req.body;
+  const { statusEvent } = req.body;
+
+  if (!["Draft", "Published"].includes(statusEvent)) {
+    throw new BadRequestError("Status yand dimasukkan Salah");
+  }
 
   const checkEvents = await Events.findOne({
     _id: id,
@@ -184,20 +188,32 @@ const changeStatusEvents = async (req) => {
   if (!checkEvents)
     throw new NotFoundError(`Tidak ada Event dengan id :  ${id}`);
 
-  if (!(status === "Draft" ? true : status === "Published" ? true : false)) {
-    throw new BadRequestError("Status yand dimasukkan Salah");
-  }
+  checkEvents.statusEvent = statusEvent;
 
-  const result = await Events.findOnedAndUpdate(
-    {
-      _id: id,
-      organizer: req.user.organizer,
-    },
-    { status },
-    { new: true, runValidators: true },
-  );
+  await checkEvents.save();
 
-  return result;
+  return checkEvents;
+
+  // if (
+  //   !(statusEvent === "Draft"
+  //     ? true
+  //     : statusEvent === "Published"
+  //       ? true
+  //       : false)
+  // ) {
+  //   throw new BadRequestError("Status yand dimasukkan Salah");
+  // }
+
+  // const result = await Events.findOnedAndUpdate(
+  //   {
+  //     _id: id,
+  //     organizer: req.user.organizer,
+  //   },
+  //   { status },
+  //   { new: true, runValidators: true },
+  // );
+
+  // return result;
 };
 
 module.exports = {
