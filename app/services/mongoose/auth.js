@@ -23,7 +23,13 @@ const signin = async (req) => {
 
   const token = createJWT({ payload: createTokenUser(result) });
 
-  return token;
+  // return token;
+
+  // start of post-script postman
+  const { role } = result;
+
+  return { token, role };
+  // end of post-script postman
 };
 
 module.exports = { signin };

@@ -6,7 +6,7 @@ const { checkingImage } = require("./images");
 const getAllTalents = async (req) => {
   const { keyword } = req.query;
 
-  let condition = {};
+  let condition = { organizer: req.user.organizer };
 
   if (keyword) {
     condition = { ...condition, name: { $regex: keyword, $options: "i" } };
@@ -27,11 +27,16 @@ const createTalents = async (req) => {
 
   await checkingImage(image);
 
-  const check = await Talents.findOne({ name });
+  const check = await Talents.findOne({ name, organizer: req.user.organizer });
 
   if (check) throw new BadRequestError("Pembicara Nama Duplikat");
 
-  const result = await Talents.create({ name, image, role });
+  const result = await Talents.create({
+    name,
+    image,
+    role,
+    organizer: req.user.organizer,
+  });
 
   return result;
 };
@@ -39,7 +44,10 @@ const createTalents = async (req) => {
 const getOneTalens = async (req) => {
   const { id } = req.params;
 
-  const result = await Talents.findOne({ _id: id })
+  const result = await Talents.findOne({
+    _id: id,
+    organizer: req.user.organizer,
+  })
     .populate({
       path: "image",
       select: "_id name",
@@ -59,13 +67,20 @@ const updateTalents = async (req) => {
 
   await checkingImage(image);
 
-  const check = await Talents.findOne({ name, _id: { $ne: id } });
+  const check = await Talents.findOne({
+    name,
+    organizer: req.user.organizer,
+    _id: { $ne: id },
+  });
 
   if (check) throw new BadRequestError("Pembicara Nama Duplikat");
 
-  const result = await Talents.findByIdAndUpdate(
-    id,
-    { name, role, image },
+  const result = await Talents.findOneAndUpdate(
+    {
+      _id: id,
+      organizer: req.user.organizer,
+    },
+    { name, role, image, organizer: req.user.organizer },
     { new: true, runValidators: true },
   );
 
@@ -75,7 +90,10 @@ const updateTalents = async (req) => {
 const deleteTalents = async (req) => {
   const { id } = req.params;
 
-  const check = await Talents.findOne({ _id: id });
+  const check = await Talents.findOne({
+    _id: id,
+    organizer: req.user.organizer,
+  });
 
   if (!check) throw new NotFoundError(`Tidak ada pembicara dengan id: ${id}`);
 
@@ -85,7 +103,9 @@ const deleteTalents = async (req) => {
 };
 
 const checkingTalents = async (id) => {
-  const result = await Talents.findOne({ _id: id });
+  const result = await Talents.findOne({
+    _id: id,
+  });
 
   if (!result)
     throw new NotFoundError(`Tidak ada pembicara dengan id :  ${id}`);

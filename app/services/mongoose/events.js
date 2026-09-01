@@ -23,7 +23,7 @@ const createEvents = async (req) => {
   await checkingCategories(category);
   await checkingTalents(talent);
 
-  const check = await Events.findOne({ title });
+  const check = await Events.findOne({ title, organizer: req.user.organizer });
 
   if (check) throw new BadRequestError("Judul Acara Sudah Terdaftar");
 
@@ -39,6 +39,7 @@ const createEvents = async (req) => {
     image,
     category,
     talent,
+    organizer: req.user.organizer,
   });
 
   return result;
@@ -47,7 +48,7 @@ const createEvents = async (req) => {
 const getAllEvents = async (req) => {
   const { keyword, category, talent, status } = req.query;
 
-  let condition = {};
+  let condition = { organizer: req.user.organizer };
 
   if (keyword) {
     condition = { ...condition, keyword: { $regex: keyword, $options: "i" } };
@@ -83,7 +84,10 @@ const getAllEvents = async (req) => {
 const getOneEvents = async (req) => {
   const { id } = req.params;
 
-  const result = await Events.findOne({ _id: id })
+  const result = await Events.findOne({
+    _id: id,
+    organizer: req.user.organizer,
+  })
     .populate({
       path: "image",
       select: "_id name",
@@ -125,7 +129,11 @@ const updateEvents = async (req) => {
   if (!checkEvents)
     throw new NotFoundError(`Tidak ada Event dengan id :  ${id}`);
 
-  const check = await Events.findOne({ title, _id: { $ne: id } });
+  const check = await Events.findOne({
+    title,
+    organizer: req.user.organizer,
+    _id: { $ne: id },
+  });
 
   if (check) throw new BadRequestError("Judul Acara Sudah Terdaftar");
 
@@ -143,6 +151,7 @@ const updateEvents = async (req) => {
       image,
       category,
       talent,
+      organizer: req.user.organizer,
     },
     { new: true, runValidators: true },
   );
@@ -153,7 +162,10 @@ const updateEvents = async (req) => {
 const deleteEvents = async (req) => {
   const { id } = req.params;
 
-  const result = await Events.findOneAndDelete({ _id: id });
+  const result = await Events.findOneAndDelete({
+    _id: id,
+    organizer: req.user.organizer,
+  });
 
   if (!result) throw new NotFoundError(`Tidak Ada Event dengan id: ${id}`);
 
@@ -164,7 +176,10 @@ const changeStatusEvents = async (req) => {
   const { id } = req.params;
   const { status } = req.body;
 
-  const checkEvents = await Events.findById(id);
+  const checkEvents = await Events.findOne({
+    _id: id,
+    organizer: req.user.organizer,
+  });
 
   if (!checkEvents)
     throw new NotFoundError(`Tidak ada Event dengan id :  ${id}`);
@@ -173,8 +188,11 @@ const changeStatusEvents = async (req) => {
     throw new BadRequestError("Status yand dimasukkan Salah");
   }
 
-  const result = await Events.findByIdAndUpdate(
-    id,
+  const result = await Events.findOnedAndUpdate(
+    {
+      _id: id,
+      organizer: req.user.organizer,
+    },
     { status },
     { new: true, runValidators: true },
   );

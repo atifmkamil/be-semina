@@ -31,6 +31,11 @@ const eventSchema = new mongoose.Schema({
   },
   image: { type: mongoose.Types.ObjectId, ref: "Image", required: true },
   talent: { type: mongoose.Types.ObjectId, ref: "Talent", required: true },
+  organizer: {
+    type: mongoose.Types.ObjectId,
+    ref: "Organizer",
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("Event", eventSchema);
