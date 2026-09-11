@@ -51,7 +51,7 @@ const getAllEvents = async (req) => {
   let condition = { organizer: req.user.organizer };
 
   if (keyword) {
-    condition = { ...condition, keyword: { $regex: keyword, $options: "i" } };
+    condition = { ...condition, title: { $regex: keyword, $options: "i" } };
   }
 
   if (category) {

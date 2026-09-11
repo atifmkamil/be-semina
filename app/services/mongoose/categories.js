@@ -41,8 +41,6 @@ const updateCategories = async (req) => {
   const { id } = req.params;
   const { name } = req.body;
 
-  const checkCategory = await checkingCategories(req);
-
   const check = await Categories.findOne({
     name,
     organizer: req.user.organizer,
@@ -74,11 +72,9 @@ const deleteCategories = async (req) => {
   return result;
 };
 
-const checkingCategories = async (req) => {
-  const { id } = req.params;
+const checkingCategories = async (id) => {
   const result = await Categories.findOne({
     _id: id,
-    organizer: req.user.organizer,
   });
 
   if (!result) throw new NotFoundError(`Tidak ada Kategori dengan id: ${id}`);
