@@ -1,7 +1,11 @@
 const Images = require("../../api/v1/images/model.js");
-const { NotFoundError } = require("../../errors/index.js");
+const { NotFoundError, BadRequestError } = require("../../errors/index.js");
 
 const createImages = async (req) => {
+  if (!req.file) {
+    throw new BadRequestError("Please upload an image file");
+  }
+
   const result = await Images.create({
     name: req.file
       ? `uploads/${req.file.filename}`
